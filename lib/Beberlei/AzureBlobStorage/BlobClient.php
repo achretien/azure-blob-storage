@@ -268,16 +268,22 @@ class BlobClient
      *
      * @param string $containerName Container name
      * @param array  $metadata      Key/value pairs of meta data
+     * @param bool $acl Blob::ACL_*
      * @return object Container properties
      * @throws BlobException
      */
-    public function createContainer($containerName = '', $metadata = array())
+    public function createContainer($containerName = '', $metadata = array(), $acl = self::ACL_PRIVATE)
     {
         Assertion::notEmpty($containerName, 'Container name is not specified');
         self::assertValidContainerName($containerName);
         Assertion::isArray($metadata, 'Meta data should be an array of key and value pairs.');
 
         $headers = $this->generateMetadataHeaders($metadata);
+
+        // Acl specified?
+        if (in_array($acl, [self::ACL_PUBLIC_BLOB, self::ACL_PUBLIC_CONTAINER])) {
+            $headers[Storage::PREFIX_STORAGE_HEADER . 'blob-public-access'] = $acl;
+        }
 
         $response = $this->performRequest($containerName, array('restype' => 'container'), 'PUT', $headers, false, null, self::RESOURCE_CONTAINER, self::PERMISSION_WRITE);
         if ( ! $response->isSuccessful()) {

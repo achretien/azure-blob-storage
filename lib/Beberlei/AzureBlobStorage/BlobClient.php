@@ -303,12 +303,14 @@ class BlobClient
      *
      * @param string $containerName Container name
      * @param array  $metadata      Key/value pairs of meta data
+     * @param bool $acl Blob::ACL_*
+     *
      * @throws BlobException
      */
-    public function createContainerIfNotExists($containerName = '', $metadata = array())
+    public function createContainerIfNotExists($containerName = '', $metadata = array(), $acl = self::ACL_PRIVATE)
     {
         if ( ! $this->containerExists($containerName)) {
-            $this->createContainer($containerName, $metadata);
+            $this->createContainer($containerName, $metadata, $acl);
         }
     }
 
